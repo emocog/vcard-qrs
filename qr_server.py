@@ -2,7 +2,6 @@ from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 from segno import helpers
 import os
-import re
 
 app = FastAPI()
 
@@ -15,13 +14,13 @@ def generate_vcard_qr(
     org: str = Query(...),
     title: str = Query(...),
     url: str = Query(...),
-    workphone: str = Query(...)
+    workphone: str = Query(...),
+    format: str = Query("png", regex="^(png|svg)$")  # format 파라미터 추가
 ):
-    
     # 파일 저장 위치
     os.makedirs("qrs", exist_ok=True)
     safe_name = email.replace("@", "_at_").replace(".", "_")
-    filename = f"qrs/vcard_{safe_name}.svg"
+    base_filename = f"qrs/vcard_{safe_name}"
 
     # VCard 기반 QR 코드 생성
     qr = helpers.make_vcard(
@@ -35,7 +34,12 @@ def generate_vcard_qr(
         workphone=workphone
     )
 
-    # SVG로 저장
-    qr.save(filename)
-
-    return FileResponse(filename, media_type="image/svg+xml")
+    # SVG 또는 PNG 저장 및 응답
+    if format == "svg":
+        file_path = f"{base_filename}.svg"
+        qr.save(file_path, kind="svg")
+        return FileResponse(file_path, media_type="image/svg+xml")
+    else:
+        file_path = f"{base_filename}.png"
+        qr.save(file_path, kind="png", scale=5)
+        return FileResponse(file_path, media_type="image/png")
