@@ -7,6 +7,7 @@ app = FastAPI()
 
 @app.get("/generate_vcard_qr")
 def generate_vcard_qr(
+    file_path: str = Query (...),
     name: str = Query(...),
     displayname: str = Query(...),
     email: str = Query(...),
@@ -17,11 +18,6 @@ def generate_vcard_qr(
     workphone: str = Query(...),
     format: str = Query("png", regex="^(png|svg)$")  # format 파라미터 추가
 ):
-    # 파일 저장 위치
-    os.makedirs("qrs", exist_ok=True)
-    safe_name = email.replace("@", "_at_").replace(".", "_")
-    base_filename = f"qrs/vcard_{safe_name}"
-
     # VCard 기반 QR 코드 생성
     qr = helpers.make_vcard(
         name=name,
@@ -36,10 +32,8 @@ def generate_vcard_qr(
 
     # SVG 또는 PNG 저장 및 응답
     if format == "svg":
-        file_path = f"{base_filename}.svg"
         qr.save(file_path, kind="svg")
         return FileResponse(file_path, media_type="image/svg+xml")
     else:
-        file_path = f"{base_filename}.png"
         qr.save(file_path, kind="png", scale=5)
         return FileResponse(file_path, media_type="image/png")
