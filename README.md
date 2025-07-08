@@ -15,7 +15,7 @@ uvicorn qr_server:app --host 0.0.0.0 --port 8000
 ### QR 생성 요청 예시
 
 ```
-GET http://<서버IP>:8000/generate_vcard_qr?name=길동;홍&displayname=홍길동&email=hong@emocog.com&phone=010-1234-5678&org=이모코그&title=연구원&url=https://emocog.com&workphone=02-1234-5678&format=png
+GET http://<서버IP>:8000/generate_vcard_qr?file_path=qrs/vcard_hong_at_emocog_com_kor.svg;name=길동;홍&displayname=홍길동&email=hong@emocog.com&phone=010-1234-5678&org=이모코그&title=연구원&url=https://emocog.com&workphone=02-1234-5678&format=png
 ```
 
 ## 📁 구조
